@@ -1,82 +1,70 @@
-# ynabi: Spiir to YNAB import script (work in progress)
+# ynabi: Spiir to YNAB import script (Converted to be AWS Lambda compatible)
 
-Since YNAB does not support Nordic banks, I created this Python script
+Since YNAB does not support Nordic banks, the original author created this Python script
 to import Spiir transactions into YNAB. The script is not endorsed by Spiir
 or YNAB and may stop working at any time.
 
 ## Getting started
 
-### Basic configuration
-
-Add your basic configuration by editing ynabi/api/config.py (see ynabi/api/config.example.py).
-
-### Configure Spiir
+### Spiir: Setup Credentials (REQUIRED)
 
 Add your Spiir login credentials to ynabi/api/credentials.py
 (see ynabi/api/credentials.example.py).
 
-### Configure YNAB
+### YNAB: Setup API token (REQUIRED)
 
-Before running `ynabi` you need to get your API token and budget ID from YNAB,
-as well as set up all Spiir categories in YNAB manually.
+- Add your API token to `./ynabi/api/credentials.py`
 
-#### API token
+(Get your YNAB Personal Access Token by following the instructions:
+https://api.youneedabudget.com/#personal-access-tokens.)
 
-Get your YNAB Personal Access Token by following the instructions:
-https://api.youneedabudget.com/#personal-access-tokens.
-Then add your API token to ynabi/api/credentials.py
-(see ynabi/api/credentials.example.py).
+### YNAB: Setup Budget ID (REQUIRED)
 
-#### Budget ID
+- Get in the url to your budget: ie. `https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`
+- Add your budget-ID to `ynabi/api/credentials.py`.
 
-Get your YNAB budget ID by going to http://app.youneedabudget.com, make sure
-the correct budget is open and copy your budget ID from the url, e.g:
-`https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`. Add your budget
-ID to ynabi/api/credentials.py.
+### YNAB: Rename Account Names in to Match SPIIR (REQUIRED)
 
-#### Categories
+*IMPORTANT: BE EXACT, OR IT WONT WORK*
 
-The way ynabi currently adds transactions to categories is by matching category
-names by string from Spiir to YNAB. For this to work you have to manually add
-all Spiir categories to YNAB, using the **exact same category names** as listed
-in Spiir. You can organize the categories in YNAB the way you want, or even hide
-the ones you don't need.
+- Rename your accounts in YNAB to what they're named in Spiir.
 
-If a Spiir category is missing from YNAB the transaction will be uncategorized
-in YNAB after import.
+## Requirements
 
-#### Account names
+- Python 3.8 or above
 
-Like categories, you need to add accounts to YNAB with the exact same names as in
-Spiir.
+## Installation
 
-### Install
+0. Clone this repo.
+1. Do the required configuration above
+2. `py -m venv venv`
+3. `pip install requests`
 
-1. `pipenv install`
+## Run it:
 
-### Run
+Two options, locally or on AWS.
 
-1. `pipenv run ./ynabi.py`
+*Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
 
-## Troubleshooting
 
-### Duplicate transactions
+### Locally
 
-If you accidentally imported transactions to YNAB that you don't want you can
-safely delete them from YNAB. To avoid duplicates, all Spiir transactions has
-a unique identifier which are stored in YNAB. Therefore transactions can only
-be imported to the same budget once - *even if the transaction has been deleted
-in YNAB!*
+Have python installed (min version 3.8)
 
-Therefore, in order to re-import previously imported (possibly deleted)
-transactions you can change the transaction ID postfix
-(`id_postfix`) in ynabi/config.py. This will allow you to re-import transactions
-to YNAB. But beware that this may create duplicates in YNAB.
+`py ./lambda_function.py`
 
-In general, once you are set up correctly, you should never have to change the
-transaction ID postfix.
 
-#### Optional: [Pushover](https://pushover.net/) support
+### On AWS Lambda
 
-1. `pip install -r optional.txt`
-2. Add `pushover_user_key` and `pushover_api_token` to ynabi/api/credentials.py
+*Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
+
+0. Do the "Configure the basics" steps
+1. Copy `./ynabi/` into ./extras/aws_lambda_code.zip (this zip file contains the requests library for use in AWS Lambda)
+2. Copy `lambda_function.py` into ./extras/aws_lambda_code.zip
+3. Upload to the AWS lambda service 
+4. Setup an amazon event bridge to trigger it daily
+
+### In case of issues:
+
+See AWS documentation: https://docs.aws.amazon.com/lambda/latest/dg/python-package.html
+

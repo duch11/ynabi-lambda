@@ -1,6 +1,7 @@
 import json
 
 from ynabi.api import ynab
+from ynabi.api.logging import log
 
 
 class Transaction:
@@ -32,14 +33,14 @@ class Transaction:
 
     @classmethod
     def from_spiir_dict(cls, spiir_dict, id_postfix=""):
-        ynab_category_id = ynab.get_category_id(spiir_dict["CategoryName"])
+        #ynab_category_id = ynab.get_category_id(spiir_dict["CategoryName"])
 
-        if spiir_dict["CategoryName"] is not None and ynab_category_id == None:
-            print(
-                "warning: unknown ynab category ({}), transaction will be uncategorized".format(
-                    spiir_dict["CategoryName"]
-                )
-            )
+        #if spiir_dict["CategoryName"] is not None and ynab_category_id == None:
+        #    log(
+        #        "warning: unknown ynab category ({}), transaction will be uncategorized".format(
+        #            spiir_dict["CategoryName"]
+        #        )
+        #    )
 
         return cls(
             account_id=ynab.get_account_id(spiir_dict["AccountName"]),
@@ -47,7 +48,7 @@ class Transaction:
             amount=int(spiir_dict["Amount"] * 1000.0),
             payee_id=None,
             payee_name=spiir_dict["Description"][:50],
-            category_id=ynab_category_id,
+            category_id=None,
             memo=None,
             cleared="cleared",
             approved=False,

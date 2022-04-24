@@ -1,11 +1,7 @@
 import time
 import json
 import requests
-
-try:
-    from ynabi.api.pushover import log
-except ImportError:
-    log = lambda *s: None  # If pushover is not installed, don't log anything
+from ynabi.api.logging import log, err
 
 from .credentials import ynab_api_token, ynab_budget_id
 
@@ -27,7 +23,7 @@ def get_category_groups():
     return resp.json()["data"]["category_groups"]
 
 
-def create_transactions(transactions, chunk_size=100, dryrun=False):
+def create_transactions(transactions, chunk_size=100):
     """
     Uploads transactions to YNAB. No return value.
     """
@@ -42,37 +38,30 @@ def create_transactions(transactions, chunk_size=100, dryrun=False):
         for x in range(0, len(transactions), chunk_size)
     ]
 
-    print(f"ynab: creating {len(transactions)} transactions in {len(chunks)} chunks")
+    log("ynab:",f"creating {len(transactions)} transactions in {len(chunks)} chunks")
 
     n_duplicates = 0
 
     for i, chunk in enumerate(chunks):
         body = {"transactions": [t.to_dict() for t in chunk]}
-
-        if dryrun:
-            print(f"ynab dryrun: would post transaction chunk {i}/{len(chunks)}..")
-            time.sleep(0.5)
+        for t in chunk:
+            log("chunk", t)
         else:
-            print(f"ynab: posting transaction chunk {i+1}/{len(chunks)}.. ", end="")
+            log("ynab:",f" posting transaction chunk {i+1}/{len(chunks)}.. ")
             resp = requests.post(url, json=body, headers=headers)
-
             if not 200 <= resp.status_code < 300:
-                print("\n")
-                log("ynab error", f"bulk create request failed ({resp.status_code})")
-                print("request: ", resp.request.body)
-                print("response: ", resp.json())
-
+                err("ynab error", f"bulk create request failed ({resp.status_code})", resp.request.body, resp.json())
                 return 0, 0
 
             n = len(resp.json()["data"]["bulk"]["duplicate_import_ids"])
             if n > 0:
-                print(f"({n} duplicates ignored)")
+                log(f"({n} duplicates ignored)")
                 n_duplicates += n
 
     n_created = len(transactions) - n_duplicates
 
     log("ynab", f"created {n_created} transactions, {n_duplicates} duplicates ignored")
-    print("ynab: done")
+    log("ynab: done")
 
     return n_created, n_duplicates
 

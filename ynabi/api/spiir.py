@@ -5,34 +5,21 @@ import datetime
 
 import requests
 
-from ynabi.config import download_path
 from ynabi.model.transaction import Transaction
 from ynabi.utils import string_to_datetime
-
+from ynabi.api.logging import log
 from .credentials import spiir_username, spiir_password
 
 spiir_datetime_format = "%Y-%m-%dT%H:%M:%SZ"
-after_time = datetime.datetime.now() + datetime.timedelta(days=1)  # tomorrow
-before_time = string_to_datetime("1000-01-01T00:00:00Z", spiir_datetime_format)
-
+tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)  # tomorrow
+dawn_of_time = string_to_datetime("1000-01-01T00:00:00Z", spiir_datetime_format)
 
 def _to_datetime(date_string):
     return string_to_datetime(date_string, spiir_datetime_format)
 
 
-def _filename_today():
-    now = datetime.datetime.now()
-    filename = download_path + "/alle-poster-{}-{}-{}.json".format(
-        str(now.year), str(now.month).zfill(2), str(now.day).zfill(2)
-    )
-    return filename
-
-
-def _get_transactions(filename=None):
-    """
-    Downloads raw spiir transactions and optionally saves to filename.
-    """
-    print("spiir: get transactions")
+def _download_transactions():
+    log("spiir:"," get transactions")
 
     url_login = "https://mine.spiir.dk/log-ind"
     url_download = "https://mine.spiir.dk/Profile/ExportAllPostingsToJson"
@@ -43,63 +30,45 @@ def _get_transactions(filename=None):
         s.post(url_login, data=payload)
         resp = s.get(url_download)
 
-    if filename is not None:
-        print(f"spiir: save transactions to {filename}")
-        with open(filename, "w", encoding="utf-8") as outfile:
-            json.dump(resp.json(), outfile, ensure_ascii=False)
-
     return resp.json()
 
 
-def _load_transactions(filename):
-    """
-    Loads raw spiir transactions form filename.
-    """
-    print(f"spiir: load transactions from {filename}")
-
-    with open(filename, encoding="utf-8") as f:
-        data = f.readline()
-
-    return json.loads(data)
+def _cached_transactions(transactions_local):
+    if transactions_local is None:
+        log("spiir:"," transactions_local is None")
+        transactions_local = _download_transactions()
+    log("spiir:"," transactions_local already there")
+    return transactions_local
 
 
-def _cached_transactions(use_cache=False):
-    """
-    Returns raw spiir transactions. Uses file cache if file was updated today.
-    """
-    if use_cache and len(glob.glob(_filename_today())) > 0:
-        print(f"spiir: using cached transactions (overwrite using --no-cache)")
-        return _load_transactions(_filename_today())
-    return _get_transactions(filename=_filename_today())
-
-
-def transactions(before=after_time, after=before_time, id_postfix="", use_cache=False):
+def getTransactions(until_t=tomorrow, from_t=dawn_of_time, id_postfix="", use_cache=False):
+    transactions_local = None
     """
     Returns list of Transation objects from raw transactions.
     Before and after time formatted as "2018-01-01T00:00:00Z".
     """
-    if isinstance(before, str):
-        before = _to_datetime(before)
+    if isinstance(until_t, str):
+        until_t = _to_datetime(until_t)
 
-    if isinstance(after, str):
-        after = _to_datetime(after)
+    if isinstance(from_t, str):
+        from_t = _to_datetime(from_t)
 
     return [
         Transaction.from_spiir_dict(spiir_dict, id_postfix)
-        for spiir_dict in _cached_transactions(use_cache=use_cache)
-        if after < _to_datetime(spiir_dict["Date"]) <= before
+        for spiir_dict in _cached_transactions(transactions_local)
+        if from_t < _to_datetime(spiir_dict["Date"]) <= until_t
     ]
 
 
-def accounts():
+def accounts(transactions_local):
     accounts = []
-    for transaction in _cached_transactions():
+    for transaction in _cached_transactions(transactions_local):
         accounts.append(transaction["AccountName"])
     return list(set(accounts))
 
 
-def categories():
+def categories(transactions_local):
     categories = []
-    for transaction in _cached_transactions():
+    for transaction in _cached_transactions(transactions_local):
         categories.append(transaction["CategoryName"])
     return list(set(categories))
