@@ -1,32 +1,38 @@
-# YNABI-Lambda: Spiir to YNAB import script. Usable on AWS Lambda.
-<img src="extras\ynabi-lambda-logo.png" width="500" />
+# YNABI-Lambda - Make Spiir ❤️ YNAB
+Spiir-to-YNAB import script. 
 
-Since YNAB does not support Nordic banks, the original author created this Python script
-to import Spiir transactions into YNAB. The script is not endorsed by Spiir
-or YNAB and may stop working at any time.
+Get a taste of auto-sync for YNAB through Spiir & Nordic API Gateway 💵 😎
 
-## Getting started
+### 🛠️This Python script automates what you already could do yourself manually:
+1. It Downloads your transactions from Spiir 💚 
+2. It Converts the transaction format a bit 🛑->✅ 
+3. Then it Imports them into YNAB 💙📅🙍💵📊
 
-### Spiir: Setup Credentials (REQUIRED)
+🧡☁️ Now with AWS Lambda Cloud support! ☁️🧡
 
-Add your Spiir login credentials to ynabi/api/credentials.py
-(see ynabi/api/credentials.example.py).
+**The script is not endorsed by Spiir or YNAB and may stop working at any time.**
 
-### YNAB: Setup API token (REQUIRED)
+<p style="text-align:center;"><img src="extras\ynabi-lambda-logo.png"  width="800" /></p>
 
-- Add your API token to `./ynabi/api/credentials.py`
+## 🛠️ Getting started - Configuring `credentials.py` 🛠️
+Add the following to your `./ynabi/api/credentials.py` file
 
-(Get your YNAB Personal Access Token by following the instructions:
-https://api.youneedabudget.com/#personal-access-tokens.)
+### Add your Spiir login credentials
 
-### YNAB: Setup Budget ID (REQUIRED)
+- Credentials: Your username and password you would use for: www.mine.spiir.dk/log-ind
 
-- Get in the url to your budget: ie. `https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`
-- Add your budget-ID to `ynabi/api/credentials.py`.
+### Add your YNAB API token
 
-### YNAB: Rename Account Names in to Match SPIIR (REQUIRED)
+- Follow the instructions: https://api.youneedabudget.com/#personal-access-tokens - to get your YNAB Personal Access Token.
 
-*IMPORTANT: BE EXACT, OR IT WONT WORK*
+### Add your budget-ID to `ynabi/api/credentials.py`
+
+Get the ID from the url for your budget:
+Example: `https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`
+
+## Rename Account Names in YNAB so they Match Spiir.`
+
+*IMPORTANT: BE EXACT!! And rename ALL OF YOUR ACCOUNTS IN THE BUDGET -> OR IT WONT WORK*
 
 - Rename your accounts in YNAB to what they're named in Spiir.
 
