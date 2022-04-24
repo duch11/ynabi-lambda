@@ -26,7 +26,7 @@ spiir_password = ""
 
 # YNAB
 ynab_api_token = "" # Get it here => https://api.youneedabudget.com/#personal-access-tokens
-ynab_budget_id = ""
+ynab_budget_id = "" # Get it from budget-URL ie: `https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`
 ```
 
 ### Explanation
