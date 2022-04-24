@@ -1,4 +1,4 @@
-# ynabi: Spiir to YNAB import script (Converted to be AWS Lambda compatible)
+# YNABI-Lambda: Spiir to YNAB import script for use on AWS Lambda.
 
 Since YNAB does not support Nordic banks, the original author created this Python script
 to import Spiir transactions into YNAB. The script is not endorsed by Spiir
