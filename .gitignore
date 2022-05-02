@@ -2,3 +2,7 @@
 __pycache__
 ynabi/config.py
 ynabi/api/credentials.py
+.terraform
+*.lock.hcl
+*.tfstate*
+
