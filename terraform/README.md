@@ -32,12 +32,11 @@ aws configure import --csv file://C:\Users\MY_USER\new_user_credentials.csv
 #Start > "Edit the system environment variables" > New > "Variable Name": AWS_PROFILE and "Variable value": "your-aws-profile-name"
 ```
 
-## Configure credentials, ynab accounts etc
-(this includes your YNAB access key and your login info for spiir)
-
-**When done: Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform**
-
 ## Deploy Infrastructure in AWS
+1. Configure credentials and YNAB accounts etc
+2. Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform**
+3. Use terraform to deploy as below: 
+
 ```
 cd terraform/
 terraform init
