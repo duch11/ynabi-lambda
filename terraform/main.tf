@@ -19,7 +19,7 @@ locals {
 //Lambda
 resource "aws_lambda_function" "YNAB-Spiir-Sync-Lambda" {
   function_name                  = local.project_name
-  filename                       = "${path.module}/../extras/aws_lambda_code.zip"
+  filename                       = "${path.module}/../lambda.zip"
   handler                        = "lambda_function.lambda_handler"
   memory_size                    = "128"
   package_type                   = "Zip"
@@ -27,7 +27,7 @@ resource "aws_lambda_function" "YNAB-Spiir-Sync-Lambda" {
   role                           = "${aws_iam_role.YSS-Lambda-Role.arn}"
   runtime                        = "python3.9"
   timeout                        = "180"
-  source_code_hash               = filebase64sha256("${path.module}/../extras/aws_lambda_code.zip")
+  source_code_hash               = filebase64sha256("${path.module}/../lambda.zip")
 
   tracing_config {
     mode = "PassThrough"
