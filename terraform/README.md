@@ -32,18 +32,19 @@ aws configure import --csv file://C:\Users\MY_USER\new_user_credentials.csv
 #Start > "Edit the system environment variables" > New > "Variable Name": AWS_PROFILE and "Variable value": "your-aws-profile-name"
 ```
 
-## Add your config to zip file
-Add the configured source code to the root of: `extras/aws_lambda_code.zip`
+## Configure credentials, ynab accounts etc
 (this includes your YNAB access key and your login info for spiir)
+When done: Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform
 
-## Deploy
+## Deploy Infrastructure in AWS
 ```
 cd terraform/
 terraform init
+terraform plan
 terraform apply
 ```
 
-## Destroy
+## Destroy Infrastructure in AWS
 ```
 terraform destroy
 ```
