@@ -86,10 +86,8 @@ Have python installed (min version 3.8)
 *Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
 
 0. Do the "Configure the basics" steps
-1. Copy `./ynabi/` into ./extras/aws_lambda_code.zip (this zip file contains the requests library for use in AWS Lambda)
-2. Copy `lambda_function.py` into ./extras/aws_lambda_code.zip
-3. Upload to the AWS lambda service 
-4. Setup an amazon event bridge to trigger it daily
+1. Run `generate_lambda_zip.py`
+2. cd Terraform and follow instructions there
 
 ### In case of issues:
 
