@@ -63,7 +63,7 @@ Spiir Accounts  | YNAB Accounts
 
 
 
-## Optional Terraform Deployment on AWS Lambda
+# Terraform Deployment on AWS Lambda (optional)
 
 *Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
 
