@@ -34,7 +34,7 @@ aws configure import --csv file://C:\Users\MY_USER\new_user_credentials.csv
 
 ## Deploy Infrastructure in AWS
 1. Configure credentials and YNAB accounts etc
-2. Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform**
+2. Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform
 3. Use terraform to deploy as below: 
 
 ```
