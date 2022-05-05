@@ -14,14 +14,13 @@ Get a taste of auto-sync for YNAB through Spiir & Nordic API Gateway 💵 😎
 
 <p style="text-align:center;"><img src="extras\ynabi-lambda-logo.png"  width="800" /></p>
 
-## 🛠️ Configuring `credentials.py` 🛠️
-Add the following to `credentials.py`
+## Credentials
+
+Add the following to `python/ynabi/api/credentials.py`
 
 ```bash
-./ynabi/api/credentials.py:
-
 # Spiir
-spiir_username = ""
+spiir_username = "" # Used for logging in to Spiir: www.mine.spiir.dk/log-ind
 spiir_password = ""
 
 # YNAB
@@ -29,16 +28,8 @@ ynab_api_token = "" # Get it here => https://api.youneedabudget.com/#personal-ac
 ynab_budget_id = "" # Get it from budget-URL ie: `https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`
 ```
 
-### Explanation
 
-- `spiir_username / spiir_password:` Used for logging in to Spiir: www.mine.spiir.dk/log-ind
-- `ynab_api_token:` Follow the instructions [here](https://api.youneedabudget.com/#personal-access-tokens) to get your YNAB Personal Access Token.
-- `ynab_budget_id:` 
-  - Navigate to your budget, in your browser. 
-  - Get the `budget-id` from the URL: `https://app.youneedabudget.com/YOUR-BUDGET-ID-IS-HERE/budget`
-
-
-## Rename Account Names in YNAB so they Match Spiir.
+## YNAB Bank Account Names
 
 **🛑IMPORTANT🛑**
 1. Account names must match exactly. 
@@ -66,28 +57,16 @@ Spiir Accounts  | YNAB Accounts
 1. Do the required configuration above
 2. `py -m venv venv`
 3. `pip install requests`
-
-## Run it:
-
-Two options, locally or on AWS.
-
-*Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
+4. `py ./lambda/lambda_function.py`
 
 
-### Locally
 
-Have python installed (min version 3.8)
-
-`py ./lambda_function.py`
-
-
-### On AWS Lambda
+## Optional Terraform Deployment on AWS Lambda
 
 *Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
 
-0. Do the "Configure the basics" steps
-1. Run `generate_lambda_zip.py`
-2. cd Terraform and follow instructions there
+0. Edit Credentials and Rename YNAB bank account names as described above
+1. See ./terraform/README.md for more.. 
 
 ### In case of issues:
 
