@@ -68,7 +68,7 @@ Spiir Accounts  | YNAB Accounts
 *Warning: AWS/cloud setup, requires an AWS account and basic knowledge about Amazon Web Services.* 
 
 0. Edit Credentials and Rename YNAB bank account names as described above
-1. See ./terraform/README.md for more.. 
+1. See https://github.com/duch11/ynabi-lambda/blob/master/terraform/README.md for more
 
 ### In case of issues:
 
