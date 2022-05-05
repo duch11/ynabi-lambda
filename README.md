@@ -47,11 +47,13 @@ Spiir Accounts  | YNAB Accounts
 
 ```
 
-## Requirements
+## Installation
+
+### Requirements
 
 - Python 3.8 or above
 
-## Installation
+### How to
 
 0. Clone this repo.
 1. Do the required configuration above
