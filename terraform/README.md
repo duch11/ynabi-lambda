@@ -34,7 +34,8 @@ aws configure import --csv file://C:\Users\MY_USER\new_user_credentials.csv
 
 ## Configure credentials, ynab accounts etc
 (this includes your YNAB access key and your login info for spiir)
-When done: Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform
+
+**When done: Run `python3 generate_lambda_zip.py` which will generate the zip file for terraform**
 
 ## Deploy Infrastructure in AWS
 ```
