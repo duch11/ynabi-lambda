@@ -3,8 +3,13 @@ from sys import stdout
 
 logger = logging.getLogger()
 
-#streamHandler = logging.StreamHandler(stdout)
-#logger.addHandler(streamHandler)
+# cleanup logging handlers
+if logger.handlers:
+    logger.handlers.clear()
+streamHandler = logging.StreamHandler(stdout)
+
+logger.addHandler(streamHandler)
+
 logger.setLevel(logging.INFO)
 
 def log(title, *args):

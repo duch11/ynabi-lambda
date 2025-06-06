@@ -3,6 +3,7 @@ import json
 import requests
 from ynabi.api.logging import log, err
 
+
 from .credentials import ynab_api_token, ynab_budget_id
 
 api = "https://api.youneedabudget.com/v1/"
@@ -22,6 +23,26 @@ def get_category_groups():
     resp = requests.get(url, headers=headers)
     return resp.json()["data"]["category_groups"]
 
+def get_transactions(since_date):
+    url = api + f"budgets/{ynab_budget_id}/transactions?since_date={since_date}"
+    resp = requests.get(url, headers=headers)
+    
+    try:
+        data = resp.json()
+    except ValueError:
+        raise Exception("Response is not valid JSON")
+
+    log("ynab.get_transactions", resp)
+    
+    if resp.status_code != 200:
+        raise Exception(f"API error {resp.status_code}: {data}")
+
+    if "data" not in data or "transactions" not in data["data"]:
+        raise Exception(f"Unexpected response format: {data}")
+    
+    
+    return data["data"]["transactions"]
+
 
 def create_transactions(transactions, chunk_size=100):
     """
@@ -31,39 +52,49 @@ def create_transactions(transactions, chunk_size=100):
 
     if len(transactions) == 0:
         log("ynab", "no transactions to upload")
-        return 0, 0
+        return
 
+    # Just go with it.. it basically makes chunks of transactions.. 
+    # first a slice, but that is done in the for loop, because its list comprehension
+    # F*** python
     chunks = [
         transactions[x : x + chunk_size]
         for x in range(0, len(transactions), chunk_size)
     ]
 
     log("ynab:",f"creating {len(transactions)} transactions in {len(chunks)} chunks")
-
-    n_duplicates = 0
+    from ynabi.config import start_date
+    ynab_transactions = get_transactions(start_date)
 
     for i, chunk in enumerate(chunks):
-        body = {"transactions": [t.to_dict() for t in chunk]}
-        for t in chunk:
-            log("chunk", t)
-        else:
-            log("ynab:",f" posting transaction chunk {i+1}/{len(chunks)}.. ")
-            resp = requests.post(url, json=body, headers=headers)
-            if not 200 <= resp.status_code < 300:
-                err("ynab error", f"bulk create request failed ({resp.status_code})", resp.request.body, resp.json())
-                return 0, 0
+        valid_transactions = [
+                single_transaction.to_dict() 
+                for single_transaction in chunk
+                if single_transaction.import_id not in [t["import_id"] for t in ynab_transactions]
+            ]
+        id_from_ynab = ynab_transactions[0]["import_id"]
+        id_from_spiir = chunk[0].import_id
+                
+        body = {"transactions": 
+            [
+                single_transaction.to_dict() 
+                for single_transaction in chunk
+            ]
+        }
+        
+        log("ynab",f"posting transaction chunk {i+1}/{len(chunks)}.. ")
 
-            n = len(resp.json()["data"]["bulk"]["duplicate_import_ids"])
-            if n > 0:
-                log(f"({n} duplicates ignored)")
-                n_duplicates += n
-
-    n_created = len(transactions) - n_duplicates
-
-    log("ynab", f"created {n_created} transactions, {n_duplicates} duplicates ignored")
+        # log each transaction id
+\
+        resp = requests.post(url, json=body, headers=headers)
+        if not 200 <= resp.status_code < 300:
+            err("ynab error", f"bulk create request failed ({resp.status_code})", resp.request.body, resp.json())
+        
+        response_data = resp.json()["data"]["bulk"]
+    
     log("ynab: done")
 
-    return n_created, n_duplicates
+    return
 
 
 #
